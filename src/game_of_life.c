@@ -17,15 +17,19 @@ int main() {
     int** matrix = create_matrix(SIZE_Y, SIZE_X);
     int** matrix_next = create_matrix(SIZE_Y, SIZE_X);
 
-    matrix[0][0] = 1;
-    matrix[0][1] = 1;
-    matrix[0][2] = 1;
-    matrix[0][3] = 1;
-    matrix[0][4] = 1;
+    for (int y = 1; y < SIZE_Y - 1; y++) {
+        for (int x = 1; x < SIZE_X - 1; x++) {
+            matrix[y][SIZE_X / 2] = 1;
+            matrix[SIZE_Y / 2][x] = 1;
+        }
+    }
 
     char c = 0;
 
-    while (scanf("%c", &c)) run_game(matrix, matrix_next);
+    while (scanf("%c", &c) && c == '\n') run_game(matrix, matrix_next);
+
+    free(matrix);
+    free(matrix_next);
     return 0;
 }
 
@@ -37,8 +41,6 @@ int run_game(int** matrix, int** matrix_next) {
 
     return 1;
 }
-
-/*------------------------------------LOGIC------------------------------------*/
 
 void logic(int** matrix, int** matrix_next, int col, int row) {
     int sum_around = 0;
@@ -67,10 +69,6 @@ void logic(int** matrix, int** matrix_next, int col, int row) {
         }
     }
 }
-
-/*------------------------------------DRAW------------------------------------*/
-
-/*------------------------------------МАТРИЦЫ------------------------------------*/
 
 int** create_matrix(int m, int n) {
     int** matrix = malloc(m * n * sizeof(int) + m * sizeof(int*));
