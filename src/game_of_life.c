@@ -1,60 +1,48 @@
-#include <stdio.h>  
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
 
-#define SIZE_X 80  
-#define SIZE_Y 25  
-
-/*-------------МАТРИЦЫ-------------*/
+#define SIZE_X 80
+#define SIZE_Y 25
 
 int** create_matrix(int col, int row);
-/*-------------ОТРИСОВКА-------------*/
 
-void draw(int** matrix, int col, int row);  // Прототип функции отрисовки игрового поля
-void draw_zero(int** matrix, int col, int row);
-/*---------ОТРИСОВКА В ПОЛЕ---------*/
+void draw(int** matrix, int col, int row);
 
-int input_int(int* c);
-int** input(int** matrix);
+void logic(int** matrix, int** matrix_next, int col, int row);
 
-
-/*---------ЛОГИКА---------*/
-
-int** logic(int** matrix, int col, int row);
-
+int run_game(int** matrix, int** matrix_next);
 /*------------------------------------MAIN------------------------------------*/
 
-int run_game(int** matrix);
-
 int main() {
-
     int** matrix = create_matrix(SIZE_Y, SIZE_X);
-    matrix = input(matrix);
-char c = 0;
+    int** matrix_next = create_matrix(SIZE_Y, SIZE_X);
 
-    // draw_zero(matrix, SIZE_Y, SIZE_X);
-    while(scanf("%c", &c))
-    run_game(matrix);
-    return 0;  // Возвращение 0 при успешном завершении программы
+    matrix[0][0] = 1;
+    matrix[0][1] = 1;
+    matrix[0][2] = 1;
+    matrix[0][3] = 1;
+    matrix[0][4] = 1;
+
+    char c = 0;
+
+    while (scanf("%c", &c)) run_game(matrix, matrix_next);
+    return 0;
 }
 
+int run_game(int** matrix, int** matrix_next) {
+    draw(matrix, SIZE_Y, SIZE_X);
+    logic(matrix, matrix_next, SIZE_Y, SIZE_X);
+    for (int y = 0; y < SIZE_Y; y++)
+        for (int x = 0; x < SIZE_X; x++) matrix[y][x] = matrix_next[y][x];
 
-int run_game(int** matrix) {
-    
-   
-        draw(matrix, SIZE_Y, SIZE_X);
-        matrix = logic(matrix, SIZE_Y, SIZE_X);
-        
-
-    
     return 1;
 }
 
 /*------------------------------------LOGIC------------------------------------*/
 
-int** logic(int** matrix, int col, int row) {
-    int** matrix_next = create_matrix(SIZE_Y, SIZE_X);
+void logic(int** matrix, int** matrix_next, int col, int row) {
     int sum_around = 0;
-     for (int y = 0; y < SIZE_Y; y++){                              
+    for (int y = 0; y < SIZE_Y; y++) {
         for (int x = 0; x < SIZE_X; x++) {
             sum_around = 0;
             sum_around += matrix[(SIZE_Y + y + 1) % SIZE_Y][(SIZE_X + x) % SIZE_X];
@@ -65,23 +53,22 @@ int** logic(int** matrix, int col, int row) {
             sum_around += matrix[(SIZE_Y + y - 1) % SIZE_Y][(SIZE_X + x - 1) % SIZE_X];
             sum_around += matrix[(SIZE_Y + y) % SIZE_Y][(SIZE_X + x - 1) % SIZE_X];
             sum_around += matrix[(SIZE_Y + y + 1) % SIZE_Y][(SIZE_X + x - 1) % SIZE_X];
-            if(matrix[y][x]) {
-                if(sum_around == 2 || sum_around == 3) matrix_next[y][x] = 1;
-                else matrix_next[y][x] = 0;
+            if (matrix[y][x]) {
+                if (sum_around == 2 || sum_around == 3)
+                    matrix_next[y][x] = 1;
+                else
+                    matrix_next[y][x] = 0;
+            } else {
+                if (sum_around == 3)
+                    matrix_next[y][x] = 1;
+                else
+                    matrix_next[y][x] = 0;
             }
-            else {
-                if(sum_around == 3) matrix_next[y][x] = 1;
-                else matrix_next[y][x] = 0;
-            }
-            
         }
-     }
-    return matrix_next;
+    }
 }
 
 /*------------------------------------DRAW------------------------------------*/
-
-
 
 /*------------------------------------МАТРИЦЫ------------------------------------*/
 
@@ -97,60 +84,24 @@ int** create_matrix(int m, int n) {
     return matrix;
 }
 
-
 void draw(int** matrix, int col, int row) {
     printf("\n\n");
 
     printf(" ");
     for (int i = 0; i < SIZE_X; i++) printf("⎯");
-    printf("\n");        
-    for (int y = 0; y < SIZE_Y; y++) {       
-        printf("|");                       
-        for (int x = 0; x < SIZE_X; x++) {   
-            if(matrix[y][x])
+    printf("\n");
+    for (int y = 0; y < SIZE_Y; y++) {
+        printf("|");
+        for (int x = 0; x < SIZE_X; x++) {
+            if (matrix[y][x])
                 printf("#");
             else
                 printf(" ");
         }
-        printf("|\n"); 
+        printf("|\n");
     }
 
-    printf(" "); 
-    for (int i = 0; i < SIZE_X; i++) printf("⎯");  
-    printf("\n");                                
-}
-
-
-void draw_zero(int** matrix, int col, int row) {
-          
-    for (int y = 0; y < SIZE_Y; y++) {                              
-        for (int x = 0; x < SIZE_X; x++) {   
-                printf("0");
-        }
-        printf("\n"); 
-    }
-                          
-}
-int** input(int** matrix) {
-    int n = 0;
-    for (int y = 0; y < SIZE_Y; y++) {                              
-        for (int x = 0; x < SIZE_X; x++) {  
-            if (input_int(&n))
-                matrix[y][x] = n;
-            
-        }
-    }
-
-    return matrix;
-}
-
-
-int input_int(int* c) {
-    int valid = 1;
-    char ch = 0;
-    if (scanf("%d%c", c, &ch) == 2 && (ch == '\n' || ch == ' ')) {
-        valid = 1;
-    } else
-        valid = 0;
-    return valid;
+    printf(" ");
+    for (int i = 0; i < SIZE_X; i++) printf("⎯");
+    printf("\n");
 }
