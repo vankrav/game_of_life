@@ -1,46 +1,34 @@
-#include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #define SIZE_X 80
 #define SIZE_Y 25
-#define CELL "o"
 
 int fillMatrixFromFile(int matrix[SIZE_Y][SIZE_X], const char* filename);
 
-void draw(int matrix[SIZE_Y][SIZE_X], int s);
+void draw(int matrix[SIZE_Y][SIZE_X]);
 
 void logic(int matrix[SIZE_Y][SIZE_X], int matrix_next[SIZE_Y][SIZE_X]);
 
-int run_game(int matrix[SIZE_Y][SIZE_X], int matrix_next[SIZE_Y][SIZE_X], int s);
+int run_game(int matrix[SIZE_Y][SIZE_X], int matrix_next[SIZE_Y][SIZE_X]);
 /*------------------------------------MAIN------------------------------------*/
 
 int main(int argc, char* argv[]) {
-    initscr();
-    curs_set(0);
-    noecho();
-
-    int s = 1;
-    int prev_s = 1;
-
     int matrix[SIZE_Y][SIZE_X] = {0};
     int matrix_next[SIZE_Y][SIZE_X] = {0};
 
     fillMatrixFromFile(matrix, argv[1]);
-    printw("okay");
+    printf("okay");
 
-    timeout(100);
     char c = 0;
-
-    while (1) {
-        s = getch() - 48;
-        if (s > 0) prev_s = s;
-        if (s <= 0) s = prev_s;
-        run_game(matrix, matrix_next, s);
+    int s = 0;
+    while (scanf("%c", &c) && c != 'q') {
+        // printf("yyyyyyy %d yyyyyyyyyyy", s);
+        run_game(matrix, matrix_next);
+        // usleep(500000);
     }
 
-    endwin();
     return 0;
 }
 
@@ -65,10 +53,8 @@ int fillMatrixFromFile(int matrix[SIZE_Y][SIZE_X], const char* filename) {
     return 0;
 }
 
-int run_game(int matrix[SIZE_Y][SIZE_X], int matrix_next[SIZE_Y][SIZE_X], int s) {
-    timeout(1000 / s);
-    clear();
-    draw(matrix, s);
+int run_game(int matrix[SIZE_Y][SIZE_X], int matrix_next[SIZE_Y][SIZE_X]) {
+    draw(matrix);
     logic(matrix, matrix_next);
     for (int y = 0; y < SIZE_Y; y++)
         for (int x = 0; x < SIZE_X; x++) matrix[y][x] = matrix_next[y][x];
@@ -104,24 +90,24 @@ void logic(int matrix[SIZE_Y][SIZE_X], int matrix_next[SIZE_Y][SIZE_X]) {
     }
 }
 
-void draw(int matrix[SIZE_Y][SIZE_X], int s) {
-    printw("%d\n", s);
+void draw(int matrix[SIZE_Y][SIZE_X]) {
+    printf("\n\n");
 
-    printw(" ");
-    for (int i = 0; i < SIZE_X; i++) printw("-");
-    printw("\n");
+    printf(" ");
+    for (int i = 0; i < SIZE_X; i++) printf("⎯");
+    printf("\n");
     for (int y = 0; y < SIZE_Y; y++) {
-        printw("|");
+        printf("|");
         for (int x = 0; x < SIZE_X; x++) {
             if (matrix[y][x])
-                printw(CELL);
+                printf("#");
             else
-                printw(" ");
+                printf(" ");
         }
-        printw("|\n");
+        printf("|\n");
     }
 
-    printw(" ");
-    for (int i = 0; i < SIZE_X; i++) printw("-");
-    printw("\n");
+    printf(" ");
+    for (int i = 0; i < SIZE_X; i++) printf("⎯");
+    printf("\n");
 }
